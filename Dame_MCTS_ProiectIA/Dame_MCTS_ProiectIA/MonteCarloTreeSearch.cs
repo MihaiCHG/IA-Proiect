@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
-namespace WindowsFormsApp1
+namespace Dame_MCTS_ProiectIA
 {
     class MonteCarloTreeSearch
     {
