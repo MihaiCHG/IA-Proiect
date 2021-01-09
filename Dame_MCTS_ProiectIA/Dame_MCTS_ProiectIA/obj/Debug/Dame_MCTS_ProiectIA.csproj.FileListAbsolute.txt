@@ -16,3 +16,12 @@ D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCT
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\bin\Debug\Dame_MCTS_ProiectIA.exe.config
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\bin\Debug\Dame_MCTS_ProiectIA.exe
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\bin\Debug\Dame_MCTS_ProiectIA.pdb
+E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\bin\Debug\Dame_MCTS_ProiectIA.exe.config
+E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\bin\Debug\Dame_MCTS_ProiectIA.exe
+E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\bin\Debug\Dame_MCTS_ProiectIA.pdb
+E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.csprojAssemblyReference.cache
+E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.Properties.Resources.resources
+E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.csproj.GenerateResource.cache
+E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.csproj.CoreCompileInputs.cache
+E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.exe
+E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.pdb

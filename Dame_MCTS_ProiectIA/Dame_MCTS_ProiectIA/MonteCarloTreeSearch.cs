@@ -36,11 +36,10 @@ namespace Dame_MCTS_ProiectIA
 
         }
 
-        public Point getBestMove()
+        public Point getBestMove(List<Point> points)
         {
-            int x = rand.Next() % 8;
-            int y = rand.Next() % 8;
-            return new Point(x, y);
+            int move = rand.Next() % points.Count();
+            return points[move];
         }
     }
 }

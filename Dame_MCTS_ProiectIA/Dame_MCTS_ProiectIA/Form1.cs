@@ -11,6 +11,8 @@ using System.Windows.Forms;
 namespace Dame_MCTS_ProiectIA
 {
     enum CellType { White, Black, BlackWithX, BlackWithY, BlackWithPossibleMove };
+
+    enum GameOverType { No, WinHuman, WinComputer};
     enum ActionType { ToSelect, ToMove };
     public partial class Form1 : Form
     {
@@ -20,9 +22,16 @@ namespace Dame_MCTS_ProiectIA
         private Point currentPos, newPos;
         private Random rand;
         private List<Point> availableMoves;
+        private int humanPieces, computerPieces;
+        private GameOverType gameOver;
         public Form1()
         {
             InitializeComponent();
+            this.newGame();
+        }
+
+        private void newGame()
+        {
             board = new CellType[8, 8] {
                 { CellType.White, CellType.BlackWithY, CellType.White, CellType.BlackWithY, CellType.White, CellType.BlackWithY, CellType.White, CellType.BlackWithY},
                 { CellType.BlackWithY, CellType.White, CellType.BlackWithY, CellType.White, CellType.BlackWithY, CellType.White, CellType.BlackWithY, CellType.White},
@@ -36,6 +45,9 @@ namespace Dame_MCTS_ProiectIA
             this.rand = new Random();
             this.action = ActionType.ToSelect;
             this.humanTurn = true;
+            this.humanPieces = 12;
+            this.computerPieces = 12;
+            this.gameOver = GameOverType.No;
         }
 
         private void drawBoard()
@@ -79,7 +91,7 @@ namespace Dame_MCTS_ProiectIA
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            this.newGame();
         }
 
         private List<Point> getAvailableMovesForPiece(int line, int column)
@@ -87,25 +99,42 @@ namespace Dame_MCTS_ProiectIA
             List<Point> moves = new List<Point>();
             if (humanTurn)
             {
-                if (line - 1 >= 0 && column - 1 >= 0 && board[line - 1, column - 1] == CellType.Black)
-                    moves.Add(new Point(line-1, column-1));
-                if (line - 1 >= 0 && column + 1 < 8 && board[line - 1, column + 1] == CellType.Black)
-                    moves.Add(new Point(line - 1, column + 1));
-                if(line - 2 >= 0 && column - 2 >= 0 && board[line-1, column-1] == CellType.BlackWithY && board[line - 2, column - 2] == CellType.Black)
+
+                if (line - 2 >= 0 && column - 2 >= 0 && board[line - 1, column - 1] == CellType.BlackWithY && board[line - 2, column - 2] == CellType.Black)
                     moves.Add(new Point(line - 2, column - 2));
-                if (line - 2 >= 0 && column + 2 < 8 && board[line - 1, column + 1] == CellType.BlackWithY && board[line - 2, column + 2] == CellType.Black)
-                    moves.Add(new Point(line - 2, column + 2));
+                if(line + 2 <8  && column + 2 <8 && board[line + 1, column + 1] == CellType.BlackWithY && board[line + 2, column + 2] == CellType.Black)
+                    moves.Add(new Point(line + 2, column + 2));
+                if(line - 2 >= 0 && column + 2 < 8 && board[line - 1, column + 1] == CellType.BlackWithY && board[line - 2, column + 2] == CellType.Black)
+                        moves.Add(new Point(line - 2, column + 2));
+                if(line + 2 <8 && column - 2 >=0 && board[line + 1, column - 1] == CellType.BlackWithY && board[line + 2, column - 2] == CellType.Black)
+                    moves.Add(new Point(line + 2, column - 2));
+                if(moves.Count()==0)
+                {
+                    if (line - 1 >= 0 && column - 1 >= 0 && board[line - 1, column - 1] == CellType.Black)
+                        moves.Add(new Point(line - 1, column - 1));
+                    if (line - 1 >= 0 && column + 1 < 8 && board[line - 1, column + 1] == CellType.Black)
+                        moves.Add(new Point(line - 1, column + 1));
+
+                }
             }
             else
             {
-                if (line + 1 < 8 && column - 1 >= 0 && board[line + 1, column - 1] == CellType.Black)
-                    moves.Add(new Point(line + 1, column - 1));
-                if (line + 1 < 8 && column + 1 < 8 && board[line + 1, column + 1] == CellType.Black)
-                    moves.Add(new Point(line + 1, column + 1));
-                if (line + 2 < 8 && column - 2 >= 0 && board[line + 1, column - 1] == CellType.BlackWithX && board[line + 2, column - 2] == CellType.Black)
-                    moves.Add(new Point(line + 2, column - 2));
+                if (line - 2 >= 0 && column - 2 >= 0 && board[line - 1, column - 1] == CellType.BlackWithX && board[line - 2, column - 2] == CellType.Black)
+                    moves.Add(new Point(line - 2, column - 2));
                 if (line + 2 < 8 && column + 2 < 8 && board[line + 1, column + 1] == CellType.BlackWithX && board[line + 2, column + 2] == CellType.Black)
                     moves.Add(new Point(line + 2, column + 2));
+                if (line - 2 >= 0 && column + 2 < 8 && board[line - 1, column + 1] == CellType.BlackWithX && board[line - 2, column + 2] == CellType.Black)
+                    moves.Add(new Point(line - 2, column + 2));
+                if (line + 2 < 8 && column - 2 >= 0 && board[line + 1, column - 1] == CellType.BlackWithX && board[line + 2, column - 2] == CellType.Black)
+                    moves.Add(new Point(line + 2, column - 2));
+                if (moves.Count() == 0)
+                {
+                    if (line + 1 < 8 && column - 1 >= 0 && board[line + 1, column - 1] == CellType.Black)
+                        moves.Add(new Point(line + 1, column - 1));
+                    if (line + 1 < 8 && column + 1 < 8 && board[line + 1, column + 1] == CellType.Black)
+                        moves.Add(new Point(line + 1, column + 1));
+
+                }
             }
             return moves;
         }
@@ -118,42 +147,92 @@ namespace Dame_MCTS_ProiectIA
             board[newPos.X, newPos.Y] = aux;
         }
 
+
+        private List<Point> searchConfruntation(CellType player)
+        {
+            List<Point> pieces = new List<Point>();
+            CellType opponent= CellType.BlackWithY;
+            if (player == CellType.BlackWithX)
+            {
+                opponent = CellType.BlackWithY;
+            }
+            else if (player == CellType.BlackWithY)
+            {
+                opponent = CellType.BlackWithX;
+            }
+            for (int line=0;line<8;line++)
+            {
+                for(int column=0;column<8;column++)
+                {
+                    if (board[line, column] == player)
+                    {
+                        if (line - 2 >= 0 && column - 2 >= 0 && board[line - 1, column - 1] == opponent && board[line - 2, column - 2] == CellType.Black
+                            || line + 2 < 8 && column + 2 < 8 && board[line + 1, column + 1] == opponent && board[line + 2, column + 2] == CellType.Black
+                            || line - 2 >= 0 && column + 2 < 8 && board[line - 1, column + 1] == opponent && board[line - 2, column + 2] == CellType.Black
+                            || line + 2 < 8 && column - 2 >= 0 && board[line + 1, column - 1] == opponent && board[line + 2, column - 2] == CellType.Black)
+                            pieces.Add(new Point(line, column));   
+                    }
+                }
+            }
+            return pieces;
+        }
+
         private void computerTurn()
         {
             MonteCarloTreeSearch monte = new MonteCarloTreeSearch();
             Point moveOfComputer = new Point();
             Point currentPos = new Point();
-            bool isValidSecondPiece = false;
             bool isValidPiece;
             bool isValid;
-            while (!isValidSecondPiece)
+            List<Point> confruntation = searchConfruntation(CellType.BlackWithY);
+            if (confruntation.Count > 0)
             {
-                isValidPiece = false;
-                while (!isValidPiece)
-                {
-                    currentPos.X = rand.Next() % 8;
-                    currentPos.Y = rand.Next() % 8;
-                    if (board[currentPos.X, currentPos.Y] == CellType.BlackWithY)
-                        isValidPiece = true;
-                }
+                int piece = rand.Next() % confruntation.Count();
+                currentPos = confruntation[piece];
                 availableMoves = getAvailableMovesForPiece(currentPos.X, currentPos.Y);
-                if (availableMoves.Count() > 0)
+            }
+            else
+            {
+                int i;
+                for (i = 0; i < this.computerPieces; i++)
                 {
-                    setAvailableMoves(availableMoves);
-                    isValidSecondPiece = true;
+                    isValidPiece = false;
+                    while (!isValidPiece)
+                    {
+                        currentPos.X = rand.Next() % 8;
+                        currentPos.Y = rand.Next() % 8;
+                        if (board[currentPos.X, currentPos.Y] == CellType.BlackWithY)
+                            isValidPiece = true;
+                    }
+                    availableMoves = getAvailableMovesForPiece(currentPos.X, currentPos.Y);
+                    if (availableMoves.Count() > 0)
+                    {
+                        setAvailableMoves(availableMoves);
+                        break;
+                    }
+                }
+                if (i >= this.computerPieces)
+                {
+                    this.gameOver = GameOverType.WinHuman;
+                    return;
                 }
             }
-            isValid = false;
-            while (!isValid)
-            {
-                moveOfComputer = monte.getBestMove();
-                labelPlayerTurn.Text = moveOfComputer.X + " " + moveOfComputer.Y;
-                isValid = isValidMove(currentPos, moveOfComputer);
-            }
+            moveOfComputer = monte.getBestMove(availableMoves);
             if (availableMoves.Count() > 0)
             {
                 unsetAvailableMoves(availableMoves);
                 availableMoves.Clear();
+            }
+            if (Math.Abs(currentPos.X - moveOfComputer.X) == 2 || Math.Abs(currentPos.Y - moveOfComputer.Y) == 2)
+            {
+                int X, Y;
+                X = currentPos.X - ((currentPos.X - moveOfComputer.X) / 2);
+                Y = currentPos.Y - ((currentPos.Y - moveOfComputer.Y) / 2);
+                board[X, Y] = CellType.Black;
+                if (this.humanPieces == 0)
+                {
+                    this.gameOver = GameOverType.WinComputer;
+                }
             }
             makeMove(currentPos, moveOfComputer);
         }
@@ -188,61 +267,99 @@ namespace Dame_MCTS_ProiectIA
         }
         private void pictureBox1_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            int line = e.Location.Y / 70;
-            int column = e.Location.X / 70;
-            if (action == ActionType.ToSelect)
+            if (this.gameOver == GameOverType.No)
             {
-                currentPos.X = line;
-                currentPos.Y = column;
-                if (humanTurn && board[currentPos.X, currentPos.Y] != CellType.BlackWithX)
+                int line = e.Location.Y / 70;
+                int column = e.Location.X / 70;
+                if (action == ActionType.ToSelect)
                 {
-                    action = ActionType.ToSelect;
-                    labelOutputAction.Text = "Selecteaza o piesa";
-                }
-                else if (humanTurn && board[currentPos.X, currentPos.Y] == CellType.BlackWithX)
-                {
-                    availableMoves = getAvailableMovesForPiece(currentPos.X, currentPos.Y);
-                    setAvailableMoves(availableMoves);
-                    action = ActionType.ToMove;
-                    labelOutputAction.Text = "Muta piesa";
-                }
-            }
-            else if (action == ActionType.ToMove)
-            {
-                newPos.X = line;
-                newPos.Y = column;
-                if (isValidMove(currentPos, newPos))
-                {
-                    unsetAvailableMoves(availableMoves);
-                    availableMoves.Clear();
-                    makeMove(currentPos, newPos);
-                    action = ActionType.ToSelect;
-                    labelPlayerTurn.Text = "Randul calculatorului";
-                    humanTurn = false;
-                    computerTurn();
-                    humanTurn = true;
-                    labelPlayerTurn.Text = "Randul tau";
-                }
-                else if(humanTurn && board[newPos.X, newPos.Y] == CellType.BlackWithX)
-                {
-                    currentPos = newPos;
-                    if(availableMoves.Count() > 0)
+                    currentPos.X = line;
+                    currentPos.Y = column;
+                    if (humanTurn && board[currentPos.X, currentPos.Y] != CellType.BlackWithX)
                     {
+                        action = ActionType.ToSelect;
+                        labelOutputAction.Text = "Selecteaza o piesa";
+                    }
+                    else if (humanTurn && board[currentPos.X, currentPos.Y] == CellType.BlackWithX)
+                    {
+                        availableMoves = getAvailableMovesForPiece(currentPos.X, currentPos.Y);
+                        setAvailableMoves(availableMoves);
+                        action = ActionType.ToMove;
+                        labelOutputAction.Text = "Muta piesa";
+                    }
+                }
+                else if (action == ActionType.ToMove)
+                {
+                    newPos.X = line;
+                    newPos.Y = column;
+                    if (isValidMove(currentPos, newPos))
+                    {
+                        if (Math.Abs(currentPos.X - newPos.X) == 2 || Math.Abs(currentPos.Y - newPos.Y) == 2)
+                        {
+                            int X, Y;
+                            X = currentPos.X - ((currentPos.X - newPos.X) / 2);
+                            Y = currentPos.Y - ((currentPos.Y - newPos.Y) / 2);
+                            board[X, Y] = CellType.Black;
+
+                        }
                         unsetAvailableMoves(availableMoves);
                         availableMoves.Clear();
+                        makeMove(currentPos, newPos);
+                        action = ActionType.ToSelect;
+                        labelPlayerTurn.Text = "Randul calculatorului";
+                        humanTurn = false;
+                        if (this.computerPieces == 0)
+                        {
+                            this.gameOver = GameOverType.WinHuman;
+                        }
+                        else
+                        {
+                            computerTurn();
+                            humanTurn = true;
+                            labelPlayerTurn.Text = "Randul tau";
+                        }
+                        if (this.gameOver == GameOverType.WinHuman)
+                        {
+                            labelOutputAction.Text = "Joc incheiat, ai castigat!";
+                        }
+                        else if (this.gameOver == GameOverType.WinComputer)
+                        {
+                            labelOutputAction.Text = "Joc incheiat, a castigat calculatorul!";
+                        }
+                        else
+                        {
+                            List<Point> confruntation = searchConfruntation(CellType.BlackWithX);
+                            if (confruntation.Count > 0)
+                            {
+                                int piece = rand.Next() % confruntation.Count();
+                                currentPos = confruntation[piece];
+                                availableMoves = getAvailableMovesForPiece(currentPos.X, currentPos.Y);
+                                setAvailableMoves(availableMoves);
+                                action = ActionType.ToMove;
+                            }
+                        }
                     }
-                    availableMoves = getAvailableMovesForPiece(currentPos.X, currentPos.Y);
-                    setAvailableMoves(availableMoves);
-                    action = ActionType.ToMove;
-                    labelOutputAction.Text = "Muta piesa";
+                    else if (humanTurn && board[newPos.X, newPos.Y] == CellType.BlackWithX)
+                    {
+                        currentPos = newPos;
+                        if (availableMoves.Count() > 0)
+                        {
+                            unsetAvailableMoves(availableMoves);
+                            availableMoves.Clear();
+                        }
+                        availableMoves = getAvailableMovesForPiece(currentPos.X, currentPos.Y);
+                        setAvailableMoves(availableMoves);
+                        action = ActionType.ToMove;
+                        labelOutputAction.Text = "Muta piesa";
+                    }
+                    else
+                    {
+                        labelOutputAction.Text = "Muta piesa";
+                        action = ActionType.ToMove;
+                    }
                 }
-                else
-                {
-                    labelOutputAction.Text = "Muta piesa";
-                    action = ActionType.ToMove;
-                }
+                drawBoard();
             }
-            drawBoard();
         }
     }
 }
