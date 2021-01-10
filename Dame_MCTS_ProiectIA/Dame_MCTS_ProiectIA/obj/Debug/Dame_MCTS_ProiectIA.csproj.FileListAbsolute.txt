@@ -25,3 +25,4 @@ E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\
 E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.csproj.CoreCompileInputs.cache
 E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.exe
 E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.pdb
+E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.Form1.resources

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace Dame_MCTS_ProiectIA
 {
-    enum CellType { White, Black, BlackWithX, BlackWithY, BlackWithPossibleMove };
+    enum CellType { White, Black, BlackWithX, BlackWithY, BlackWithPossibleMove, BlackWithPieceConflict };
 
     enum GameOverType { No, WinHuman, WinComputer};
     enum ActionType { ToSelect, ToMove };
@@ -22,6 +22,7 @@ namespace Dame_MCTS_ProiectIA
         private Point currentPos, newPos;
         private Random rand;
         private List<Point> availableMoves;
+        private List<Point> confruntation;
         private int humanPieces, computerPieces;
         private GameOverType gameOver;
         public Form1()
@@ -48,6 +49,10 @@ namespace Dame_MCTS_ProiectIA
             this.humanPieces = 12;
             this.computerPieces = 12;
             this.gameOver = GameOverType.No;
+            this.confruntation = new List<Point>();
+            labelPlayerTurn.Text = "Randul tau";
+            labelOutputAction.Text = "Selecteaza o piesa";
+            drawBoard();
         }
 
         private void drawBoard()
@@ -77,6 +82,10 @@ namespace Dame_MCTS_ProiectIA
                                 g.DrawImage(new Bitmap("images\\blackBox.png"), new Point(i * 70, j * 70));
                                 g.DrawImage(new Bitmap("images\\possibleMove.png"), new Point(i * 70, j * 70));
                                 break;
+                            case CellType.BlackWithPieceConflict:
+                                g.DrawImage(new Bitmap("images\\blackBox.png"), new Point(i * 70, j * 70));
+                                g.DrawImage(new Bitmap("images\\pieceConflict.png"), new Point(i * 70, j * 70));
+                                break;
                         }
                     }
                 }
@@ -89,25 +98,66 @@ namespace Dame_MCTS_ProiectIA
             drawBoard();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        
+        private void getCatch(List<Point> moves,CellType opponent, int line, int column, int direction)
         {
-            this.newGame();
+            int signLine, signColumn;
+            signLine = signColumn = 0;
+            switch(direction)
+            {
+                case 1:// - -
+                    signLine = signColumn = -1;
+                    break;
+                case 2:// - +
+                    signLine = 1;
+                    signColumn = -1;
+                    break;
+                case 3:// + +
+                    signLine = signColumn = 1;
+                    break;
+                case 4:// + -
+                    signLine = -1;
+                    signColumn = +1;
+                    break;
+            }
+            for (int i = 2; i < 8; i += 2)
+            {
+                if (line + signLine * i >= 0 && column + signColumn * i >= 0 && line + signLine * i <8 && column + signColumn * i <8)//daca nu a iesit de pe tabla
+                {
+                    if (board[line + signLine*i - signLine*1, column + signColumn*i - signColumn*1] != opponent || board[line + signLine * i, column + signColumn * i] != CellType.Black)//daca nu este in confruntare sau urmatorul loc nu este liber
+                    {
+                        if (i > 2)
+                        {
+                            moves.Add(new Point(line + signLine * (i-2), column + signColumn * (i-2)));  
+                        }
+                        break;
+                    }
+                    else { 
+                        Console.WriteLine("Test"); }
+                }
+                else
+                {
+                    if (i > 2)
+                    {
+                        moves.Add(new Point(line + signLine * (i - 2), column + signColumn * (i - 2)));
+                    }
+                    break;
+                }
+
+            }
         }
+
 
         private List<Point> getAvailableMovesForPiece(int line, int column)
         {
             List<Point> moves = new List<Point>();
             if (humanTurn)
             {
-
-                if (line - 2 >= 0 && column - 2 >= 0 && board[line - 1, column - 1] == CellType.BlackWithY && board[line - 2, column - 2] == CellType.Black)
-                    moves.Add(new Point(line - 2, column - 2));
-                if(line + 2 <8  && column + 2 <8 && board[line + 1, column + 1] == CellType.BlackWithY && board[line + 2, column + 2] == CellType.Black)
-                    moves.Add(new Point(line + 2, column + 2));
-                if(line - 2 >= 0 && column + 2 < 8 && board[line - 1, column + 1] == CellType.BlackWithY && board[line - 2, column + 2] == CellType.Black)
-                        moves.Add(new Point(line - 2, column + 2));
-                if(line + 2 <8 && column - 2 >=0 && board[line + 1, column - 1] == CellType.BlackWithY && board[line + 2, column - 2] == CellType.Black)
-                    moves.Add(new Point(line + 2, column - 2));
+                getCatch(moves, CellType.BlackWithY, line, column,1);
+                getCatch(moves, CellType.BlackWithY, line, column,2);
+                getCatch(moves, CellType.BlackWithY, line, column,3);
+                getCatch(moves, CellType.BlackWithY, line, column,4);
+                
                 if(moves.Count()==0)
                 {
                     if (line - 1 >= 0 && column - 1 >= 0 && board[line - 1, column - 1] == CellType.Black)
@@ -119,14 +169,10 @@ namespace Dame_MCTS_ProiectIA
             }
             else
             {
-                if (line - 2 >= 0 && column - 2 >= 0 && board[line - 1, column - 1] == CellType.BlackWithX && board[line - 2, column - 2] == CellType.Black)
-                    moves.Add(new Point(line - 2, column - 2));
-                if (line + 2 < 8 && column + 2 < 8 && board[line + 1, column + 1] == CellType.BlackWithX && board[line + 2, column + 2] == CellType.Black)
-                    moves.Add(new Point(line + 2, column + 2));
-                if (line - 2 >= 0 && column + 2 < 8 && board[line - 1, column + 1] == CellType.BlackWithX && board[line - 2, column + 2] == CellType.Black)
-                    moves.Add(new Point(line - 2, column + 2));
-                if (line + 2 < 8 && column - 2 >= 0 && board[line + 1, column - 1] == CellType.BlackWithX && board[line + 2, column - 2] == CellType.Black)
-                    moves.Add(new Point(line + 2, column - 2));
+                getCatch(moves, CellType.BlackWithX, line, column, 1);
+                getCatch(moves, CellType.BlackWithX, line, column, 2);
+                getCatch(moves, CellType.BlackWithX, line, column, 3);
+                getCatch(moves, CellType.BlackWithX, line, column, 4);
                 if (moves.Count() == 0)
                 {
                     if (line + 1 < 8 && column - 1 >= 0 && board[line + 1, column - 1] == CellType.Black)
@@ -177,6 +223,27 @@ namespace Dame_MCTS_ProiectIA
             return pieces;
         }
 
+        private List<Point> availablePiece(CellType player)
+        {
+            List<Point> pieces = new List<Point>();
+            
+            for (int line = 0; line < 8; line++)
+            {
+                for (int column = 0; column < 8; column++)
+                {
+                    if (board[line, column] == player)
+                    {
+
+                        if (getAvailableMovesForPiece(line, column).Count() > 0)
+                        {
+                            pieces.Add(new Point(line, column));
+                        }
+                    }
+                }
+            }
+            return pieces;
+        }
+
         private void computerTurn()
         {
             MonteCarloTreeSearch monte = new MonteCarloTreeSearch();
@@ -184,7 +251,7 @@ namespace Dame_MCTS_ProiectIA
             Point currentPos = new Point();
             bool isValidPiece;
             bool isValid;
-            List<Point> confruntation = searchConfruntation(CellType.BlackWithY);
+            confruntation = searchConfruntation(CellType.BlackWithY);
             if (confruntation.Count > 0)
             {
                 int piece = rand.Next() % confruntation.Count();
@@ -193,25 +260,17 @@ namespace Dame_MCTS_ProiectIA
             }
             else
             {
-                int i;
-                for (i = 0; i < this.computerPieces; i++)
+                List<Point> availablePieces = availablePiece(CellType.BlackWithY);
+                if (availablePieces.Count() > 0)
                 {
-                    isValidPiece = false;
-                    while (!isValidPiece)
-                    {
-                        currentPos.X = rand.Next() % 8;
-                        currentPos.Y = rand.Next() % 8;
-                        if (board[currentPos.X, currentPos.Y] == CellType.BlackWithY)
-                            isValidPiece = true;
-                    }
+                    currentPos = availablePieces[rand.Next() % availablePieces.Count()];
                     availableMoves = getAvailableMovesForPiece(currentPos.X, currentPos.Y);
                     if (availableMoves.Count() > 0)
                     {
                         setAvailableMoves(availableMoves);
-                        break;
                     }
                 }
-                if (i >= this.computerPieces)
+                else
                 {
                     this.gameOver = GameOverType.WinHuman;
                     return;
@@ -229,6 +288,7 @@ namespace Dame_MCTS_ProiectIA
                 X = currentPos.X - ((currentPos.X - moveOfComputer.X) / 2);
                 Y = currentPos.Y - ((currentPos.Y - moveOfComputer.Y) / 2);
                 board[X, Y] = CellType.Black;
+                this.humanPieces--;
                 if (this.humanPieces == 0)
                 {
                     this.gameOver = GameOverType.WinComputer;
@@ -258,6 +318,26 @@ namespace Dame_MCTS_ProiectIA
             }
         }
 
+        private void setPieceConflict(List<Point> points)
+        {
+            foreach (Point item in points)
+            {
+                board[item.X, item.Y] = CellType.BlackWithPieceConflict;
+            }
+        }
+
+        private void unsetPieceConflict(List<Point> points)
+        {
+            foreach (Point item in points)
+            {
+                board[item.X, item.Y] = CellType.BlackWithX;
+            }
+        }
+        private void buttonNewGame_Click(object sender, EventArgs e)
+        {
+            this.newGame();
+        }
+
         private void unsetAvailableMoves(List<Point> points)
         {
             foreach (Point item in points)
@@ -275,7 +355,18 @@ namespace Dame_MCTS_ProiectIA
                 {
                     currentPos.X = line;
                     currentPos.Y = column;
-                    if (humanTurn && board[currentPos.X, currentPos.Y] != CellType.BlackWithX)
+                    if(confruntation.Count()>0)
+                    {
+                        if (humanTurn && board[currentPos.X, currentPos.Y] == CellType.BlackWithPieceConflict)
+                        {
+                            unsetPieceConflict(confruntation);
+                            availableMoves = getAvailableMovesForPiece(currentPos.X, currentPos.Y);
+                            setAvailableMoves(availableMoves);
+                            action = ActionType.ToMove;
+                            labelOutputAction.Text = "Muta piesa";
+                        }
+                    }
+                    else if (humanTurn && board[currentPos.X, currentPos.Y] != CellType.BlackWithX)
                     {
                         action = ActionType.ToSelect;
                         labelOutputAction.Text = "Selecteaza o piesa";
@@ -294,13 +385,18 @@ namespace Dame_MCTS_ProiectIA
                     newPos.Y = column;
                     if (isValidMove(currentPos, newPos))
                     {
-                        if (Math.Abs(currentPos.X - newPos.X) == 2 || Math.Abs(currentPos.Y - newPos.Y) == 2)
+                        if (Math.Abs(currentPos.X - newPos.X) >= 2 || Math.Abs(currentPos.Y - newPos.Y) >= 2)
                         {
-                            int X, Y;
-                            X = currentPos.X - ((currentPos.X - newPos.X) / 2);
-                            Y = currentPos.Y - ((currentPos.Y - newPos.Y) / 2);
-                            board[X, Y] = CellType.Black;
-
+                            int directionX = (currentPos.X - newPos.X) / Math.Abs(currentPos.X - newPos.X);
+                            int directionY = (currentPos.Y - newPos.Y) / Math.Abs(currentPos.Y - newPos.Y);
+                            for(int X= currentPos.X; Math.Abs(X-newPos.X)!=0; X-=directionX*2)
+                            {
+                                for (int Y = currentPos.Y; Math.Abs(Y - newPos.Y) != 0; Y -= directionY * 2)
+                                {
+                                    board[X - directionX, Y - directionY] = CellType.Black;
+                                    this.computerPieces--;
+                                }
+                            }
                         }
                         unsetAvailableMoves(availableMoves);
                         availableMoves.Clear();
@@ -317,6 +413,10 @@ namespace Dame_MCTS_ProiectIA
                             computerTurn();
                             humanTurn = true;
                             labelPlayerTurn.Text = "Randul tau";
+                            if(availablePiece(CellType.BlackWithX).Count==0)
+                            {
+                                this.gameOver = GameOverType.WinComputer;
+                            }
                         }
                         if (this.gameOver == GameOverType.WinHuman)
                         {
@@ -324,22 +424,21 @@ namespace Dame_MCTS_ProiectIA
                         }
                         else if (this.gameOver == GameOverType.WinComputer)
                         {
-                            labelOutputAction.Text = "Joc incheiat, a castigat calculatorul!";
+                            labelOutputAction.Text = "Joc incheiat, a \ncastigat calculatorul!";
                         }
                         else
                         {
-                            List<Point> confruntation = searchConfruntation(CellType.BlackWithX);
+                            confruntation = searchConfruntation(CellType.BlackWithX);
+                            
                             if (confruntation.Count > 0)
                             {
-                                int piece = rand.Next() % confruntation.Count();
-                                currentPos = confruntation[piece];
-                                availableMoves = getAvailableMovesForPiece(currentPos.X, currentPos.Y);
-                                setAvailableMoves(availableMoves);
-                                action = ActionType.ToMove;
+                                setPieceConflict(confruntation);
+                                action = ActionType.ToSelect;
+                                labelOutputAction.Text = "Selecteaza piesa pentru \nconfruntare";
                             }
                         }
                     }
-                    else if (humanTurn && board[newPos.X, newPos.Y] == CellType.BlackWithX)
+                    else if (humanTurn && confruntation.Count()==0 && board[newPos.X, newPos.Y] == CellType.BlackWithX)
                     {
                         currentPos = newPos;
                         if (availableMoves.Count() > 0)
