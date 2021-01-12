@@ -345,6 +345,77 @@ namespace Dame_MCTS_ProiectIA
                 board[item.X, item.Y] = CellType.Black;
             }
         }
+
+        private bool isGameOver()
+        {
+            bool isOver = false;
+            int distanceHuman,distanceComputer;
+            int availabePiecesHuman = availablePiece(CellType.BlackWithX).Count();
+            int availabePiecesComputer = availablePiece(CellType.BlackWithY).Count();
+            if (this.computerPieces == 0)
+            {
+                this.gameOver = GameOverType.WinHuman;
+            }
+            else if(this.humanPieces == 0)
+            {
+                this.gameOver = GameOverType.WinComputer;
+            }
+            else if (availabePiecesHuman == 0 && availabePiecesComputer == 0)
+            {
+                if(this.humanPieces < this.computerPieces)
+                {
+                    this.gameOver = GameOverType.WinComputer;
+                }
+                else if (this.humanPieces > this.computerPieces)
+                {
+                    this.gameOver = GameOverType.WinHuman;
+                }
+                else
+                {
+                    distanceHuman = distanceComputer = 0;
+                    for (int line = 0; line < 8; line++)
+                    {
+                        for (int column = 0; column < 8; column++)
+                        {
+                            if (board[line, column] == CellType.BlackWithX)
+                            {
+
+                                distanceHuman += Math.Abs(line);
+                            }
+                            else if (board[line, column] == CellType.BlackWithY)
+                            {
+
+                                distanceComputer += Math.Abs(line-8);
+                            }
+                        }
+                    }
+                    if(distanceHuman>distanceComputer)
+                    {
+                        this.gameOver = GameOverType.WinComputer;
+                    }
+                    else
+                    {
+                        this.gameOver = GameOverType.WinHuman;
+                    }
+                }
+
+            }
+            else if (availabePiecesHuman == 0)
+            {
+                this.gameOver = GameOverType.WinComputer;
+            }
+            else if (availabePiecesComputer == 0)
+            {
+                this.gameOver = GameOverType.WinHuman;
+            }
+            if(this.gameOver!=GameOverType.No)
+            {
+                isOver = true;
+            }
+            return isOver;
+
+        }
+
         private void pictureBox1_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (this.gameOver == GameOverType.No)
@@ -404,20 +475,13 @@ namespace Dame_MCTS_ProiectIA
                         action = ActionType.ToSelect;
                         labelPlayerTurn.Text = "Randul calculatorului";
                         humanTurn = false;
-                        if (this.computerPieces == 0)
-                        {
-                            this.gameOver = GameOverType.WinHuman;
-                        }
-                        else
+                        if (!isGameOver())
                         {
                             computerTurn();
                             humanTurn = true;
                             labelPlayerTurn.Text = "Randul tau";
-                            if(availablePiece(CellType.BlackWithX).Count==0)
-                            {
-                                this.gameOver = GameOverType.WinComputer;
-                            }
                         }
+                        
                         if (this.gameOver == GameOverType.WinHuman)
                         {
                             labelOutputAction.Text = "Joc incheiat, ai castigat!";
