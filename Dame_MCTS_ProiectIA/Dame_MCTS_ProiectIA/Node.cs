@@ -15,7 +15,7 @@ namespace Dame_MCTS_ProiectIA
             this.TN = 0;
             this.Children = new List<Node>();
         }
-        public CellType[,] Board { get; set; }
+        public CellType[,] Board;
         public int W { get; set; }
         public int N { get; set; }
         public int TN { get; set; }

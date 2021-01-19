@@ -46,9 +46,9 @@ namespace Dame_MCTS_ProiectIA
                     {
                         if (humanTurn && board[currentPos.X, currentPos.Y] == CellType.BlackWithPieceConflict)
                         {
-                            UnsetPieceConflict(board, confruntation);
+                            UnsetPieceConflict(ref board, confruntation);
                             availableMoves = GetAvailableMovesForPiece(board, currentPos.X, currentPos.Y, CellType.BlackWithX);
-                            SetAvailableMoves(board, availableMoves);
+                            SetAvailableMoves(ref board, availableMoves);
                             action = ActionType.ToMove;
                             labelOutputAction.Text = "Muta piesa";
                         }
@@ -61,7 +61,7 @@ namespace Dame_MCTS_ProiectIA
                     else if (humanTurn && board[currentPos.X, currentPos.Y] == CellType.BlackWithX)
                     {
                         availableMoves = GetAvailableMovesForPiece(board, currentPos.X, currentPos.Y, CellType.BlackWithX);
-                        SetAvailableMoves(board, availableMoves);
+                        SetAvailableMoves(ref board, availableMoves);
                         action = ActionType.ToMove;
                         labelOutputAction.Text = "Muta piesa";
                     }
@@ -72,20 +72,21 @@ namespace Dame_MCTS_ProiectIA
                     newPos.Y = column;
                     if (IsValidMove(board, currentPos, newPos))
                     {
-                        MakeMove(board, currentPos, newPos, PlayerTurnSimulation.Human);
-                        UnsetAvailableMoves(board, availableMoves);
+                        UnsetAvailableMoves(ref board, availableMoves);
                         availableMoves.Clear();
-                        
+                        MakeMove(ref board, currentPos, newPos, PlayerTurnSimulation.Human, ref this.gameOver);
+
                         action = ActionType.ToSelect;
                         labelPlayerTurn.Text = "Randul calculatorului";
                         humanTurn = false;
+                        boardGame.DrawBoard();
                         if (!IsGameOver(board, ref this.gameOver))
                         {
-                            ComputerTurn(board);
+                            ComputerTurn(ref board);
                             humanTurn = true;
                             labelPlayerTurn.Text = "Randul tau";
                         }
-                        boardGame.DrawBoard();
+                        
                         if (this.gameOver == GameOverType.WinHuman)
                         {
                             labelOutputAction.Text = "Joc incheiat, ai castigat!";
@@ -100,7 +101,7 @@ namespace Dame_MCTS_ProiectIA
 
                             if (confruntation.Count > 0)
                             {
-                                SetPieceConflict(board, confruntation);
+                                SetPieceConflict(ref board, confruntation);
                                 action = ActionType.ToSelect;
                                 labelOutputAction.Text = "Selecteaza piesa pentru \nconfruntare";
                             }
@@ -111,11 +112,11 @@ namespace Dame_MCTS_ProiectIA
                         currentPos = newPos;
                         if (availableMoves.Count() > 0)
                         {
-                            UnsetAvailableMoves(board, availableMoves);
+                            UnsetAvailableMoves(ref board, availableMoves);
                             availableMoves.Clear();
                         }
                         availableMoves = GetAvailableMovesForPiece(board, currentPos.X, currentPos.Y, CellType.BlackWithX);
-                        SetAvailableMoves(board, availableMoves);
+                        SetAvailableMoves(ref board, availableMoves);
                         action = ActionType.ToMove;
                         labelOutputAction.Text = "Muta piesa";
                     }
@@ -125,6 +126,7 @@ namespace Dame_MCTS_ProiectIA
                         action = ActionType.ToMove;
                     }
                 }
+                boardGame.Board = board;
                 boardGame.DrawBoard();
             }
         }
@@ -239,7 +241,7 @@ namespace Dame_MCTS_ProiectIA
             return moves;
         }
 
-        public void MakeMove(CellType[,] board, Point currentPos, Point newPos, PlayerTurnSimulation player )
+        public void MakeMove(ref CellType[,] board, Point currentPos, Point newPos, PlayerTurnSimulation player , ref GameOverType gameO)
         {
 
             if (Math.Abs(currentPos.X - newPos.X) == 2 || Math.Abs(currentPos.Y - newPos.Y) == 2)
@@ -253,7 +255,7 @@ namespace Dame_MCTS_ProiectIA
                     this.humanPieces--;
                     if (this.humanPieces == 0)
                     {
-                        this.gameOver = GameOverType.WinComputer;
+                        gameO = GameOverType.WinComputer;
                     }
                 }
                 else if (player == Dame_MCTS_ProiectIA.PlayerTurnSimulation.Human)
@@ -261,7 +263,7 @@ namespace Dame_MCTS_ProiectIA
                     this.computerPieces--;
                     if (this.computerPieces == 0)
                     {
-                        this.gameOver = GameOverType.WinHuman;
+                        gameO = GameOverType.WinHuman;
                     }
                 }
             }
@@ -324,41 +326,17 @@ namespace Dame_MCTS_ProiectIA
             return pieces;
         }
 
-        public void ComputerTurn(CellType[,] board)
+        public void ComputerTurn(ref CellType[,] board)
         {
             MonteCarloTreeSearch monte = new MonteCarloTreeSearch(this);
             Point moveOfComputer = new Point();
             Point currentPos = new Point();
             //bool isValidPiece, isValid;
-            confruntation = SearchConfruntation(board, CellType.BlackWithY);
-            if (confruntation.Count > 0)
-            {
-                int piece = rand.Next() % confruntation.Count();
-                currentPos = confruntation[piece];
-                availableMoves = GetAvailableMovesForPiece(board, currentPos.X, currentPos.Y, CellType.BlackWithY);
-            }
-            else
-            {
-                List<Point> availablePieces = AvailablePiece(board, CellType.BlackWithY);
-                if (availablePieces.Count() > 0)
-                {
-                    currentPos = availablePieces[rand.Next() % availablePieces.Count()];
-                    availableMoves = GetAvailableMovesForPiece(board, currentPos.X, currentPos.Y, CellType.BlackWithY);
-                    if (availableMoves.Count() > 0)
-                    {
-                        SetAvailableMoves(board, availableMoves);
-                    }
-                }
-                else
-                {
-                    this.gameOver = GameOverType.WinHuman;
-                    return;
-                }
-            }
-            boardGame.Board = monte.GetBestMove();
+          
+            board = monte.GetBestMove();
             if (availableMoves.Count() > 0)
             {
-                UnsetAvailableMoves(board, availableMoves);
+                UnsetAvailableMoves(ref board, availableMoves);
                 availableMoves.Clear();
             }
             
@@ -377,7 +355,7 @@ namespace Dame_MCTS_ProiectIA
             return true;
         }
 
-        public void SetAvailableMoves(CellType[,] board, List<Point> points)
+        public void SetAvailableMoves(ref CellType[,] board, List<Point> points)
         {
             foreach (Point item in points)
             {
@@ -385,7 +363,7 @@ namespace Dame_MCTS_ProiectIA
             }
         }
 
-        public void SetPieceConflict(CellType[,] board, List<Point> points)
+        public void SetPieceConflict(ref CellType[,] board, List<Point> points)
         {
             foreach (Point item in points)
             {
@@ -393,7 +371,7 @@ namespace Dame_MCTS_ProiectIA
             }
         }
 
-        public void UnsetPieceConflict(CellType[,] board, List<Point> points)
+        public void UnsetPieceConflict(ref CellType[,] board, List<Point> points)
         {
             foreach (Point item in points)
             {
@@ -405,7 +383,7 @@ namespace Dame_MCTS_ProiectIA
             this.NewGame();
         }
 
-        public void UnsetAvailableMoves(CellType[,] board, List<Point> points)
+        public void UnsetAvailableMoves(ref CellType[,] board, List<Point> points)
         {
             foreach (Point item in points)
             {

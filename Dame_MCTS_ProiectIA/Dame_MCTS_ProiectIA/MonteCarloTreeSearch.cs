@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Threading;
 
 namespace Dame_MCTS_ProiectIA
 {
@@ -13,14 +14,15 @@ namespace Dame_MCTS_ProiectIA
         private Form1 parent;
         private Node tree;
         private Random rand;
-        public CellType[,] Board { get; set; }
+        private GameOverType gameO;
+        public CellType[,] Board;
         public PlayerTurnSimulation playerTurn { get; set; }
         public MonteCarloTreeSearch(Form1 form)
         {
             this.parent = form;
             tree = new Node();
             tree.Board = copyBoard(parent.getBoard());
-            tree.Player = playerTurn;
+           
             if (parent.humanTurn) {
                 playerTurn = PlayerTurnSimulation.Human;
             }
@@ -28,9 +30,18 @@ namespace Dame_MCTS_ProiectIA
             {
                 playerTurn = PlayerTurnSimulation.Machine;
             }
+            tree.Player = playerTurn;
             Board = tree.Board;
             rand = new Random();
         }
+
+        private static readonly DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        public static long CurrentTimeMillis()
+        {
+            return (long)(DateTime.UtcNow - Jan1st1970).TotalMilliseconds;
+        }
+
 
         private CellType[,] copyBoard(CellType[,] board)
         {
@@ -53,8 +64,16 @@ namespace Dame_MCTS_ProiectIA
             if (pieces.Count() == 0) {
                 pieces = parent.AvailablePiece(board, player);
             }
-            point = pieces[rand.Next() % pieces.Count()];
-            return point;
+            if (pieces.Count() > 0)
+            {
+                point = pieces[rand.Next() % pieces.Count()];
+                return point;
+            }
+            else
+            {
+                parent.IsGameOver(board, ref gameO);
+                return new Point(-1, -1);
+            }
         }
 
         //functie care sa fie utilizata pentru determinarea unei pozitii random
@@ -71,12 +90,18 @@ namespace Dame_MCTS_ProiectIA
             else
                 cellType = CellType.BlackWithY;
            
-            positionOfPiece = getRandomPosition(board, cellType);
-            move.Add(positionOfPiece);
-            availableMoves = parent.GetAvailableMovesForPiece(Board, positionOfPiece.X, positionOfPiece.Y, cellType);
-            randMove = rand.Next() % availableMoves.Count();
-            move.Add(availableMoves[randMove]);
-            return move;
+            positionOfPiece = getRandomPosition(Board, cellType);
+            if (positionOfPiece.X!=-1)
+            {
+                move.Add(positionOfPiece);
+                //Thread.Sleep(50);
+                availableMoves = parent.GetAvailableMovesForPiece(Board, positionOfPiece.X, positionOfPiece.Y, cellType);
+                randMove = rand.Next() % availableMoves.Count();
+
+                move.Add(availableMoves[randMove]);
+                return move;
+            }
+            else { return null; }
         }
         public Node Selection(Node startNode)
         {
@@ -110,15 +135,19 @@ namespace Dame_MCTS_ProiectIA
             {
                 Value = double.PositiveInfinity
             };
+            
+            newChild.Board = copyBoard(node.Board);
+            List<Point> randomMove = GetRandomMove(playerTurn, node.Board);
+            if (randomMove != null)
+            {
+                parent.MakeMove(ref newChild.Board, randomMove[0], randomMove[1], playerTurn, ref this.gameO);
+            }
             if (playerTurn == PlayerTurnSimulation.Human)
                 playerTurn = PlayerTurnSimulation.Machine;
             else
                 playerTurn = PlayerTurnSimulation.Human;
-            newChild.Player = playerTurn;
-            newChild.Board = copyBoard(node.Board);
-            List<Point> randomMove = GetRandomMove(playerTurn, node.Board);
-            parent.MakeMove(Board, randomMove[0], randomMove[1], playerTurn);
 
+            newChild.Player = playerTurn;
             node.AddChild(newChild);
             return newChild;
         }
@@ -128,11 +157,12 @@ namespace Dame_MCTS_ProiectIA
             Board = copyBoard(node.Board);
             PlayerTurnSimulation turn = playerTurn;
             GameOverType gameO = GameOverType.No;
-            bool isOver = false;
+            bool isOver = false; ;
             int humanPieces, machinePieces;
             humanPieces = parent.humanPieces;
             machinePieces = parent.computerPieces;
-            do
+            isOver = parent.IsGameOver(Board, ref gameO);
+            while (isOver == false) 
             {
                 CellType cellType;
                 if (turn == PlayerTurnSimulation.Human)
@@ -140,18 +170,21 @@ namespace Dame_MCTS_ProiectIA
                 else
                     cellType = CellType.BlackWithY;
                 List<Point> randomMove = GetRandomMove(turn,Board);
-                parent.MakeMove(Board, randomMove[0], randomMove[1], turn);
-                if (turn == PlayerTurnSimulation.Human)
-                    turn = PlayerTurnSimulation.Machine;
-                else
-                    turn = PlayerTurnSimulation.Human;
-                
-                isOver = parent.IsGameOver(Board, ref gameO);
-                
-            } while (isOver==false);
+                if (randomMove != null)
+                {
+                    parent.MakeMove(ref Board, randomMove[0], randomMove[1], turn, ref this.gameO);
+                    if (turn == PlayerTurnSimulation.Human)
+                        turn = PlayerTurnSimulation.Machine;
+                    else
+                        turn = PlayerTurnSimulation.Human;
+
+                    isOver = parent.IsGameOver(Board, ref gameO);
+                }
+            } 
             node.TN++;
-            parent.humanPieces = humanPieces;
-            parent.computerPieces = machinePieces;
+            parent.humanPieces =humanPieces;
+            parent.computerPieces= machinePieces;
+            
             return gameO;
         }
 
@@ -176,17 +209,21 @@ namespace Dame_MCTS_ProiectIA
 
             int i = 0;
             Node node;
-            GameOverType gameO;
+            long end = MonteCarloTreeSearch.CurrentTimeMillis() + 2000;
             PlayerTurnSimulation player = PlayerTurnSimulation.Human;
-            while(i<2)
+            while(MonteCarloTreeSearch.CurrentTimeMillis()< end)
             {
+                gameO = GameOverType.No;
                 node = Selection(tree);
                 node = Expanding(node);
-                gameO = Simulation(node);
-                if (gameO == GameOverType.WinHuman)
-                    player = PlayerTurnSimulation.Human;
-                else if (gameO == GameOverType.WinComputer)
-                    player = PlayerTurnSimulation.Machine;
+                if (gameO == GameOverType.No)
+                {
+                    gameO = Simulation(node);
+                    if (gameO == GameOverType.WinHuman)
+                        player = PlayerTurnSimulation.Human;
+                    else if (gameO == GameOverType.WinComputer)
+                        player = PlayerTurnSimulation.Machine;
+                }
                 Backpropagation(node, player);
                 i++;
             }

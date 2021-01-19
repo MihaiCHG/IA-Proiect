@@ -31,7 +31,7 @@
             this.buttonNewGame = new System.Windows.Forms.Button();
             this.labelOutputAction = new System.Windows.Forms.Label();
             this.labelPlayerTurn = new System.Windows.Forms.Label();
-            this.boardGame = new BoardGame();
+            this.boardGame = new Dame_MCTS_ProiectIA.BoardGame();
             this.SuspendLayout();
             // 
             // buttonNewGame
