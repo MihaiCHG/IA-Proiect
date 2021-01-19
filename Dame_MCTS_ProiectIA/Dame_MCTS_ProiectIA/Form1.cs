@@ -250,7 +250,7 @@ namespace Dame_MCTS_ProiectIA
                 X = currentPos.X - ((currentPos.X - newPos.X) / 2);
                 Y = currentPos.Y - ((currentPos.Y - newPos.Y) / 2);
                 board[X, Y] = CellType.Black;
-                if (player == Dame_MCTS_ProiectIA.PlayerTurnSimulation.Machine)
+                if (player == PlayerTurnSimulation.Machine)
                 {
                     this.humanPieces--;
                     if (this.humanPieces == 0)
@@ -258,7 +258,7 @@ namespace Dame_MCTS_ProiectIA
                         gameO = GameOverType.WinComputer;
                     }
                 }
-                else if (player == Dame_MCTS_ProiectIA.PlayerTurnSimulation.Human)
+                else if (player == PlayerTurnSimulation.Human)
                 {
                     this.computerPieces--;
                     if (this.computerPieces == 0)
@@ -329,9 +329,9 @@ namespace Dame_MCTS_ProiectIA
         public void ComputerTurn(ref CellType[,] board)
         {
             MonteCarloTreeSearch monte = new MonteCarloTreeSearch(this);
-            Point moveOfComputer = new Point();
+            /*Point moveOfComputer = new Point();
             Point currentPos = new Point();
-            //bool isValidPiece, isValid;
+            bool isValidPiece, isValid;*/
           
             board = monte.GetBestMove();
             if (availableMoves.Count() > 0)
