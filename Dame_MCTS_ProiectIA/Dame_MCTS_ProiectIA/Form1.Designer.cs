@@ -28,21 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.buttonNewGame = new System.Windows.Forms.Button();
             this.labelOutputAction = new System.Windows.Forms.Label();
             this.labelPlayerTurn = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.boardGame = new BoardGame();
             this.SuspendLayout();
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(28, 12);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(560, 560);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
             // 
             // buttonNewGame
             // 
@@ -52,7 +42,7 @@
             this.buttonNewGame.TabIndex = 1;
             this.buttonNewGame.Text = "New Game";
             this.buttonNewGame.UseVisualStyleBackColor = true;
-            this.buttonNewGame.Click += new System.EventHandler(this.buttonNewGame_Click);
+            this.buttonNewGame.Click += new System.EventHandler(this.ButtonNewGame_Click);
             // 
             // labelOutputAction
             // 
@@ -72,27 +62,32 @@
             this.labelPlayerTurn.TabIndex = 3;
             this.labelPlayerTurn.Text = "Randul jucatorului uman";
             // 
+            // boardGame
+            // 
+            this.boardGame.Location = new System.Drawing.Point(12, 12);
+            this.boardGame.Name = "boardGame";
+            this.boardGame.Size = new System.Drawing.Size(560, 560);
+            this.boardGame.TabIndex = 0;
+            this.boardGame.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BoardGame_MouseUp);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(714, 596);
+            this.Controls.Add(this.boardGame);
             this.Controls.Add(this.labelPlayerTurn);
             this.Controls.Add(this.labelOutputAction);
             this.Controls.Add(this.buttonNewGame);
-            this.Controls.Add(this.pictureBox1);
             this.Name = "Form1";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private BoardGame boardGame;
         private System.Windows.Forms.Button buttonNewGame;
         private System.Windows.Forms.Label labelOutputAction;
         private System.Windows.Forms.Label labelPlayerTurn;
