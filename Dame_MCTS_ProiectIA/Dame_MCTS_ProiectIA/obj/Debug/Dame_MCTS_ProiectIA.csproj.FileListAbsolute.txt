@@ -20,7 +20,6 @@ E:\IA\Proiect\IA-Proiect-main\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\bin\Debug\Dame_MCTS_ProiectIA.exe.config
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\bin\Debug\Dame_MCTS_ProiectIA.exe
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\bin\Debug\Dame_MCTS_ProiectIA.pdb
-D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.csprojAssemblyReference.cache
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.Form1.resources
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.Properties.Resources.resources
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.csproj.GenerateResource.cache
