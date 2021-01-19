@@ -26,3 +26,4 @@ D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCT
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.csproj.CoreCompileInputs.cache
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.exe
 D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.pdb
+D:\Documente\Facultate\An_4\I_IA\Proiect\IA-Proiect\Dame_MCTS_ProiectIA\Dame_MCTS_ProiectIA\obj\Debug\Dame_MCTS_ProiectIA.csprojAssemblyReference.cache

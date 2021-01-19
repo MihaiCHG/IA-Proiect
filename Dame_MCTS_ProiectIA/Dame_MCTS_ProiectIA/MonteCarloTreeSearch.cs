@@ -209,9 +209,9 @@ namespace Dame_MCTS_ProiectIA
 
             int i = 0;
             Node node;
-            long end = MonteCarloTreeSearch.CurrentTimeMillis() + 2000;
+            long end = CurrentTimeMillis() + 2000;
             PlayerTurnSimulation player = PlayerTurnSimulation.Human;
-            while(MonteCarloTreeSearch.CurrentTimeMillis()< end)
+            while(CurrentTimeMillis()< end)
             {
                 gameO = GameOverType.No;
                 node = Selection(tree);
