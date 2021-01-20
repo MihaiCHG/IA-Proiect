@@ -17,7 +17,19 @@ namespace Dame_MCTS_ProiectIA
         {
             this.OnMouseClick(e);
         }
-
+        public static int GetNumerOfPiecesForPlayer(CellType[,] board, CellType player)
+        {
+            int c = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (board[i, j] == player)
+                        c++;
+                }
+            }
+            return c;
+        }
         public BoardGame() : base()
         {
             this.pictureBoxBoard = new PictureBox();

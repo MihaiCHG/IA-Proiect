@@ -89,13 +89,12 @@ namespace Dame_MCTS_ProiectIA
                 cellType = CellType.BlackWithX;
             else
                 cellType = CellType.BlackWithY;
-           
-            positionOfPiece = getRandomPosition(Board, cellType);
+            positionOfPiece = getRandomPosition(board, cellType);
             if (positionOfPiece.X!=-1)
             {
                 move.Add(positionOfPiece);
                 //Thread.Sleep(50);
-                availableMoves = parentForm.GetAvailableMovesForPiece(Board, positionOfPiece.X, positionOfPiece.Y, cellType);
+                availableMoves = parentForm.GetAvailableMovesForPiece(board, positionOfPiece.X, positionOfPiece.Y, cellType);
                 randMove = rand.Next() % availableMoves.Count();
 
                 move.Add(availableMoves[randMove]);
@@ -107,9 +106,6 @@ namespace Dame_MCTS_ProiectIA
         {
             double maxValue;
             Node selected = null;
-            int humanPieces, machinePieces;
-            humanPieces = parentForm.humanPieces;
-            machinePieces = parentForm.computerPieces;
             while (startNode.Children.Count() > 0)
             {
                 maxValue = startNode.Children.First().Value;
@@ -124,8 +120,6 @@ namespace Dame_MCTS_ProiectIA
                 }
                 startNode = selected;
             }
-            parentForm.humanPieces = humanPieces;
-            parentForm.computerPieces = machinePieces;
             return startNode;
         }
 
@@ -157,18 +151,15 @@ namespace Dame_MCTS_ProiectIA
             Board = copyBoard(node.Board);
             PlayerTurnSimulation turn = playerTurn;
             GameOverType gameO = GameOverType.No;
-            bool isOver = false; ;
-            int humanPieces, machinePieces;
-            humanPieces = parentForm.humanPieces;
-            machinePieces = parentForm.computerPieces;
+            bool isOver = false;
             isOver = parentForm.IsGameOver(Board, ref gameO);
             while (isOver == false) 
             {
-                CellType cellType;
+                /*CellType cellType;
                 if (turn == PlayerTurnSimulation.Human)
                     cellType = CellType.BlackWithX;
                 else
-                    cellType = CellType.BlackWithY;
+                    cellType = CellType.BlackWithY;*/
                 List<Point> randomMove = GetRandomMove(turn,Board);
                 if (randomMove != null)
                 {
@@ -182,8 +173,6 @@ namespace Dame_MCTS_ProiectIA
                 }
             } 
             node.TN++;
-            parentForm.humanPieces =humanPieces;
-            parentForm.computerPieces= machinePieces;
             
             return gameO;
         }

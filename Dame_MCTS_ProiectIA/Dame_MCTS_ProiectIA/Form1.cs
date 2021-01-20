@@ -22,7 +22,6 @@ namespace Dame_MCTS_ProiectIA
         private Random rand;
         private List<Point> availableMoves;
         private List<Point> confruntation;
-        public int humanPieces, computerPieces;
 
         public CellType[,] getBoard() { return this.boardGame.Board; }
         public BoardGame getBoardGame() { return this.boardGame; }
@@ -148,8 +147,6 @@ namespace Dame_MCTS_ProiectIA
             this.rand = new Random();
             this.action = ActionType.ToSelect;
             this.humanTurn = true;
-            this.humanPieces = 12;
-            this.computerPieces = 12;
             this.gameOver = GameOverType.No;
             this.confruntation = new List<Point>();
             labelPlayerTurn.Text = "Randul tau";
@@ -209,10 +206,10 @@ namespace Dame_MCTS_ProiectIA
             List<Point> moves = new List<Point>();
             if (player == CellType.BlackWithX)
             {
-                getCatch(board,moves, CellType.BlackWithY, line, column,1);
-                getCatch(board, moves, CellType.BlackWithY, line, column,2);
-                getCatch(board, moves, CellType.BlackWithY, line, column,3);
-                getCatch(board, moves, CellType.BlackWithY, line, column,4);
+                getCatch(board, moves, CellType.BlackWithY, line, column, 1);
+                getCatch(board, moves, CellType.BlackWithY, line, column, 2);
+                getCatch(board, moves, CellType.BlackWithY, line, column, 3);
+                getCatch(board, moves, CellType.BlackWithY, line, column, 4);
                 
                 if(moves.Count()==0)
                 {
@@ -252,16 +249,14 @@ namespace Dame_MCTS_ProiectIA
                 board[X, Y] = CellType.Black;
                 if (player == PlayerTurnSimulation.Machine)
                 {
-                    this.humanPieces--;
-                    if (this.humanPieces == 0)
+                    if (BoardGame.GetNumerOfPiecesForPlayer(board, CellType.BlackWithX) == 0)
                     {
                         gameO = GameOverType.WinComputer;
                     }
                 }
                 else if (player == PlayerTurnSimulation.Human)
                 {
-                    this.computerPieces--;
-                    if (this.computerPieces == 0)
+                    if (BoardGame.GetNumerOfPiecesForPlayer(board, CellType.BlackWithY) == 0)
                     {
                         gameO = GameOverType.WinHuman;
                     }
@@ -334,11 +329,11 @@ namespace Dame_MCTS_ProiectIA
             bool isValidPiece, isValid;*/
           
             board = monte.GetBestMove();
-            if (availableMoves.Count() > 0)
+            /*if (availableMoves.Count() > 0)
             {
                 UnsetAvailableMoves(ref board, availableMoves);
                 availableMoves.Clear();
-            }
+            }*/
             
         }
 
@@ -397,21 +392,21 @@ namespace Dame_MCTS_ProiectIA
             int distanceHuman,distanceComputer;
             int availabePiecesHuman = AvailablePiece(board, CellType.BlackWithX).Count();
             int availabePiecesComputer = AvailablePiece(board, CellType.BlackWithY).Count();
-            if (this.computerPieces == 0)
+            if (BoardGame.GetNumerOfPiecesForPlayer(board, CellType.BlackWithY) == 0)
             {
                 gameO = GameOverType.WinHuman;
             }
-            else if(this.humanPieces == 0)
+            else if(BoardGame.GetNumerOfPiecesForPlayer(board, CellType.BlackWithX) == 0)
             {
                 gameO = GameOverType.WinComputer;
             }
             else if (availabePiecesHuman == 0 && availabePiecesComputer == 0)
             {
-                if(this.humanPieces < this.computerPieces)
+                if(BoardGame.GetNumerOfPiecesForPlayer(board, CellType.BlackWithX) < BoardGame.GetNumerOfPiecesForPlayer(board, CellType.BlackWithY))
                 {
                     gameO = GameOverType.WinComputer;
                 }
-                else if (this.humanPieces > this.computerPieces)
+                else if (BoardGame.GetNumerOfPiecesForPlayer(board, CellType.BlackWithX) > BoardGame.GetNumerOfPiecesForPlayer(board, CellType.BlackWithY))
                 {
                     gameO = GameOverType.WinHuman;
                 }
