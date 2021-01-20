@@ -207,9 +207,8 @@ namespace Dame_MCTS_ProiectIA
 
                     isOver = parentForm.IsGameOver(Board, ref gameO);
                 }
-            } 
-            node.TN++;
-            
+            }
+            node.N++;
             return gameO;
         }
 
@@ -218,7 +217,7 @@ namespace Dame_MCTS_ProiectIA
             Node nodeProp = node;
             while (nodeProp != null)
             {
-                nodeProp.N++;
+                nodeProp.TN++;
                 if (nodeProp.Player == player)
                 {
                     nodeProp.W += 10;
