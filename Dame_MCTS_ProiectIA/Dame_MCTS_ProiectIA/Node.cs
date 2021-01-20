@@ -32,7 +32,7 @@ namespace Dame_MCTS_ProiectIA
             this.Children.Remove(child);
         }
 
-        public void CalcUCTS()
+        public void CalcUCT()
         {
             Value = ((double)W / (double)N) + 1.41 * Math.Sqrt(Math.Log(TN) / (double)N);
         }

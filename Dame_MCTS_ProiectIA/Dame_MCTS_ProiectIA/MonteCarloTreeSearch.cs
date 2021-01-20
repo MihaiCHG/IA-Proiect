@@ -120,35 +120,71 @@ namespace Dame_MCTS_ProiectIA
                 }
                 startNode = selected;
             }
+            Expanding(startNode);
+            if (startNode.Children.Count()>0)
+            {
+                maxValue = startNode.Children.First().Value;
+                selected = startNode.Children.First();
+                foreach (Node child in startNode.Children)
+                {
+                    if (child.Value > maxValue)
+                    {
+                        maxValue = child.Value;
+                        selected = child;
+                    }
+                }
+                startNode = selected;
+            }
             return startNode;
         }
 
-        public Node Expanding(Node node)
+        public void Expanding(Node node)
         {
-            Node newChild = new Node
+            Node newChild;
+            CellType cellType;
+            if (!parentForm.IsGameOver(Board, ref gameO))
             {
-                Value = double.PositiveInfinity
-            };
-            
-            newChild.Board = copyBoard(node.Board);
-            List<Point> randomMove = GetRandomMove(playerTurn, node.Board);
-            if (randomMove != null)
-            {
-                parentForm.MakeMove(ref newChild.Board, randomMove[0], randomMove[1], playerTurn, ref this.gameO);
-            }
-            if (playerTurn == PlayerTurnSimulation.Human)
-                playerTurn = PlayerTurnSimulation.Machine;
-            else
-                playerTurn = PlayerTurnSimulation.Human;
+                if (node.Player == PlayerTurnSimulation.Human)
+                    cellType = CellType.BlackWithX;
+                else
+                    cellType = CellType.BlackWithY;
+                List<Point> pieces = parentForm.SearchConfruntation(node.Board, cellType);
+                if (pieces.Count() == 0)
+                {
+                    pieces = parentForm.AvailablePiece(node.Board, cellType);
+                }
+                for (int i = 0; i < pieces.Count(); i++)
+                {
+                    List<Point> moves = parentForm.GetAvailableMovesForPiece(node.Board, pieces[i].X, pieces[i].Y, cellType);
+                    for (int j = 0; j < moves.Count(); j++)
+                    {
+                        newChild = new Node
+                        {
+                            Value = double.PositiveInfinity
+                        };
 
-            newChild.Player = playerTurn;
-            node.AddChild(newChild);
-            return newChild;
+                        newChild.Board = copyBoard(node.Board);
+                        if (!parentForm.IsGameOver(Board, ref gameO))
+                        {
+                            parentForm.MakeMove(ref newChild.Board, pieces[i], moves[j], node.Player, ref gameO);
+                        }
+                        if (node.Player == PlayerTurnSimulation.Human)
+                            playerTurn = PlayerTurnSimulation.Machine;
+                        else
+                            playerTurn = PlayerTurnSimulation.Human;
+
+                        newChild.Player = playerTurn;
+                        newChild.Parent = node;
+                        node.AddChild(newChild);
+                    }
+                }
+            }
         }
 
         public GameOverType Simulation(Node node)
         {
             Board = copyBoard(node.Board);
+            playerTurn = node.Player;
             PlayerTurnSimulation turn = playerTurn;
             GameOverType gameO = GameOverType.No;
             bool isOver = false;
@@ -163,7 +199,7 @@ namespace Dame_MCTS_ProiectIA
                 List<Point> randomMove = GetRandomMove(turn,Board);
                 if (randomMove != null)
                 {
-                    parentForm.MakeMove(ref Board, randomMove[0], randomMove[1], turn, ref this.gameO);
+                    parentForm.MakeMove(ref Board, randomMove[0], randomMove[1], turn, ref gameO);
                     if (turn == PlayerTurnSimulation.Human)
                         turn = PlayerTurnSimulation.Machine;
                     else
@@ -187,7 +223,7 @@ namespace Dame_MCTS_ProiectIA
                 {
                     nodeProp.W += 10;
                 }
-                nodeProp.CalcUCTS();
+                nodeProp.CalcUCT();
                 nodeProp = nodeProp.Parent;
             }
         }
@@ -198,13 +234,12 @@ namespace Dame_MCTS_ProiectIA
 
             int i = 0;
             Node node;
-            long end = CurrentTimeMillis() + 2000;
+            long end = CurrentTimeMillis() + 4000;
             PlayerTurnSimulation player = PlayerTurnSimulation.Human;
             while(CurrentTimeMillis()< end)
             {
                 gameO = GameOverType.No;
                 node = Selection(tree);
-                node = Expanding(node);
                 if (gameO == GameOverType.No)
                 {
                     gameO = Simulation(node);

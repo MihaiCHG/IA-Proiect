@@ -84,6 +84,7 @@ namespace Dame_MCTS_ProiectIA
                             ComputerTurn(ref board);
                             humanTurn = true;
                             labelPlayerTurn.Text = "Randul tau";
+                            IsGameOver(board, ref this.gameOver);
                         }
                         
                         if (this.gameOver == GameOverType.WinHuman)
@@ -289,10 +290,10 @@ namespace Dame_MCTS_ProiectIA
                 {
                     if (board[line, column] == player)
                     {
-                        if (line - 2 >= 0 && column - 2 >= 0 && board[line - 1, column - 1] == opponent && board[line - 2, column - 2] == CellType.Black
-                            || line + 2 < 8 && column + 2 < 8 && board[line + 1, column + 1] == opponent && board[line + 2, column + 2] == CellType.Black
-                            || line - 2 >= 0 && column + 2 < 8 && board[line - 1, column + 1] == opponent && board[line - 2, column + 2] == CellType.Black
-                            || line + 2 < 8 && column - 2 >= 0 && board[line + 1, column - 1] == opponent && board[line + 2, column - 2] == CellType.Black)
+                        if ((line - 2 >= 0 && column - 2 >= 0 && board[line - 1, column - 1] == opponent && board[line - 2, column - 2] == CellType.Black)
+                            || (line + 2 < 8 && column + 2 < 8 && board[line + 1, column + 1] == opponent && board[line + 2, column + 2] == CellType.Black)
+                            || (line - 2 >= 0 && column + 2 < 8 && board[line - 1, column + 1] == opponent && board[line - 2, column + 2] == CellType.Black)
+                            || (line + 2 < 8 && column - 2 >= 0 && board[line + 1, column - 1] == opponent && board[line + 2, column - 2] == CellType.Black))
                             pieces.Add(new Point(line, column));   
                     }
                 }
